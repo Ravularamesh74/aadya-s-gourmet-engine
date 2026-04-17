@@ -5,8 +5,10 @@ import interiorImage from "@/assets/restaurant-interior.jpg";
 const stats = [
   { icon: Flame, value: "5+", label: "Years of Flavor" },
   { icon: Users, value: "50K+", label: "Happy Customers" },
+  
   { icon: Award, value: "4.1★", label: "Google Rating" },
   { icon: Utensils, value: "40+", label: "Signature Dishes" },
+
 ];
 
 const AboutSection = () => {

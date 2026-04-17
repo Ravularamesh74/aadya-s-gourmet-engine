@@ -1,99 +1,136 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { Flame, Users, Award, Utensils } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import interiorImage from "@/assets/restaurant-interior.jpg";
 
 const stats = [
   { icon: Flame, value: "5+", label: "Years of Flavor" },
   { icon: Users, value: "50K+", label: "Happy Customers" },
-  
   { icon: Award, value: "4.1★", label: "Google Rating" },
   { icon: Utensils, value: "40+", label: "Signature Dishes" },
-
 ];
 
 const AboutSection = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const [hovered, setHovered] = useState<number | null>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setIsVisible(true); },
-      { threshold: 0.2 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, []);
+  // 🔥 Parallax Scroll
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const yImage = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   return (
-    <section id="about" ref={sectionRef} className="relative py-24 md:py-32 bg-pattern overflow-hidden">
-      {/* Decorative */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl" />
+    <section
+      ref={sectionRef}
+      className="relative py-32 overflow-hidden bg-[#0a0a0a]"
+    >
+      {/* 🔥 Ambient Glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 blur-[120px]" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-accent/10 blur-[140px]" />
+      </div>
 
-      <div className="container mx-auto px-4 md:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
-          <div className={`relative transition-all duration-1000 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-16"}`}>
-            <div className="relative rounded-2xl overflow-hidden group">
-              <img
-                src={interiorImage}
-                alt="Aadya's Restaurant elegant Arabian interior"
-                loading="lazy"
-                width={1024}
-                height={1024}
-                className="w-full h-[500px] object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-warm-black/60 via-transparent to-transparent" />
-              {/* Floating card */}
-              <div className="absolute bottom-6 left-6 right-6 p-4 bg-card/90 backdrop-blur-xl rounded-xl border border-gold/20">
-                <p className="font-arabic text-sm text-foreground/80 italic">
-                  "Taste the magic at Aadya's Cloud Kitchen Mandi Restaurant where Mandi dreams come true."
-                </p>
-              </div>
+      <div className="container mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-20 items-center">
+
+          {/* 🔥 IMAGE SIDE */}
+          <motion.div style={{ y: yImage, opacity }}>
+            <div className="relative group perspective-[1200px]">
+
+              {/* Glass Border */}
+              <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-primary/40 via-transparent to-accent/40 blur opacity-40 group-hover:opacity-80 transition duration-500" />
+
+              {/* Main Image */}
+              <motion.div
+                whileHover={{ rotateY: 8, rotateX: 4, scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 120 }}
+                className="relative rounded-2xl overflow-hidden"
+              >
+                <img
+                  src={interiorImage}
+                  alt="restaurant"
+                  className="w-full h-[520px] object-cover"
+                />
+
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                {/* Floating Quote */}
+                <motion.div
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute bottom-6 left-6 right-6 p-5 rounded-xl backdrop-blur-xl bg-white/5 border border-white/10"
+                >
+                  <p className="text-sm italic text-white/80">
+                    “Taste the magic where Mandi dreams come alive.”
+                  </p>
+                </motion.div>
+              </motion.div>
             </div>
-            {/* Decorative border */}
-            <div className="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-primary/30 rounded-tl-2xl" />
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-primary/30 rounded-br-2xl" />
-          </div>
+          </motion.div>
 
-          {/* Content */}
-          <div className={`transition-all duration-1000 delay-200 ${isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-16"}`}>
-            <span className="text-xs font-body uppercase tracking-[0.3em] text-primary mb-4 block">
+          {/* 🔥 CONTENT SIDE */}
+          <motion.div
+            initial={{ opacity: 0, x: 80 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <span className="uppercase tracking-[0.4em] text-primary text-xs">
               Our Story
             </span>
-            <h2 className="font-heading text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+
+            <h2 className="text-5xl font-bold leading-tight mt-4">
               A Legacy of{" "}
-              <span className="text-gradient-gold italic">Authentic</span>{" "}
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent italic">
+                Authentic
+              </span>{" "}
               Arab Flavors
             </h2>
-            <div className="space-y-4 text-foreground/60 font-body text-sm leading-relaxed">
-              <p>
-                Nestled in the vibrant heart of Padmarao Nagar, Hyderabad, Aadya's Restaurant
-                is your ultimate destination for authentic Arab cuisine. Our kitchen brings the rich
-                traditions of Mandi, Kebabs, and Arabian delicacies to your table.
-              </p>
-              <p>
-                Every dish is crafted with hand-picked spices, slow-cooked meats, and generations
-                of culinary wisdom. From our signature Chicken Juicy Mandi to sizzling kebab
-                platters — each bite is a journey to the Arabian Peninsula.
-              </p>
-            </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
+            <p className="mt-6 text-white/60 text-sm leading-relaxed">
+              Nestled in Hyderabad, Aadya's Restaurant delivers authentic Arabian cuisine with rich spices, slow-cooked meats, and generational mastery.
+            </p>
+
+            <p className="mt-3 text-white/60 text-sm leading-relaxed">
+              From signature Mandi to sizzling kebabs — every bite is crafted for unforgettable flavor.
+            </p>
+
+            {/* 🔥 STATS GRID */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mt-12">
               {stats.map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className="text-center p-4 rounded-xl bg-muted/50 border border-border hover:border-primary/30 transition-all duration-300 group"
-                  style={{ transitionDelay: `${i * 100}ms` }}
+                <motion.div
+                  key={i}
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative p-5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-lg cursor-pointer"
                 >
-                  <stat.icon className="w-5 h-5 text-primary mx-auto mb-2 group-hover:scale-110 transition-transform" />
-                  <p className="text-2xl font-heading font-bold text-foreground">{stat.value}</p>
-                  <p className="text-xs font-body text-muted-foreground mt-1">{stat.label}</p>
-                </div>
+                  {/* Hover Glow */}
+                  <div
+                    className={`absolute inset-0 rounded-xl transition ${
+                      hovered === i
+                        ? "bg-gradient-to-r from-primary/20 to-accent/20 blur-xl opacity-100"
+                        : "opacity-0"
+                    }`}
+                  />
+
+                  <stat.icon className="w-6 h-6 text-primary mb-3" />
+
+                  <h3 className="text-2xl font-bold">{stat.value}</h3>
+                  <p className="text-xs text-white/60">{stat.label}</p>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </section>
